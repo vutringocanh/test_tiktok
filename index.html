@@ -1,88 +1,70 @@
-
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <script src="/js/guard/obf/trc.js"></script>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js" crossorigin="anonymous"></script>
-
-    <script src="sharedio/sharedio.js"></script>
-    <script src="socketioclient.js?v=10"></script>
-
-    <link rel="stylesheet" href="/css/text-effects.css">
-    <script src="/js/text-effects.js"></script>
-
+    <title>Green Screen Widget</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            overflow-x: hidden;
-            width: 100%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+        }
+        
         video {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            pointer-events: none;
-            z-index: -1;
+            object-fit: contain;
+            background-color: transparent !important;
+        }
+        
+        /* Ẩn controls trên một số browser */
+        video::-webkit-media-controls {
+            display: none !important;
+        }
+        
+        video::-webkit-media-controls-panel {
+            display: none !important;
         }
     </style>
-
+</head>
+<body>
+    <video 
+        autoplay 
+        loop 
+        muted 
+        playsinline
+        id="greenscreen-video">
+        <source src="video.webm" type="video/webm">
+        Browser của bạn không hỗ trợ video HTML5.
+    </video>
+    
     <script>
-        const ASSET_URL = "https://assets.tikfinity.com/widget-christmas-snow/";
-        const ASSET_MAP = {
-            simple_snow_1: `${ASSET_URL}SimpleSnow/SimpleSnow_stage1.webm`,
-            simple_snow_2: `${ASSET_URL}SimpleSnow/SimpleSnow_stage2.webm`,
-            simple_snow_3: `${ASSET_URL}SimpleSnow/SimpleSnow_stage3.webm`,
-            snow_flakes_1: `${ASSET_URL}SnowFlakes/Snowflakes_stage1.webm`,
-            snow_flakes_2: `${ASSET_URL}SnowFlakes/Snowflakes_stage2.webm`,
-            soft_snow_1: `${ASSET_URL}SoftSnow/SoftSnow_Stage1.webm`,
-            soft_snow_2: `${ASSET_URL}SoftSnow/SoftSnow_Stage2.webm`,
-            soft_snow_3: `${ASSET_URL}SoftSnow/SoftSnow_Stage3.webm`,
-        }
-   
-        function getSetting(settingName) {
-            return settings["fallingsnow" + "_" + settingName];
-        }
-
-        function updateSettings(hasChanges) {
-            const variation = getSetting("variation") !== undefined ? getSetting("variation") : "simple_snow_1";            
-            
-            const video = document.querySelector('#video');
-            const source = video.querySelector('#source');
-            source.src = ASSET_MAP[variation];
-
-            video.load();
-            video.play();
-            
-            if (!settings) return;
-        }
-
-        $(window).on("load", () => {
-            updateSettings();
+        // Đảm bảo video autoplay
+        const video = document.getElementById('greenscreen-video');
+        
+        // Fallback nếu autoplay bị chặn
+        video.play().catch(err => {
+            console.log('Autoplay bị chặn:', err);
+            // Có thể thêm UI button để user click play
+        });
+        
+        // Đảm bảo video luôn play
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && video.paused) {
+                video.play();
+            }
         });
     </script>
-</head>
-
-<body>
-
-<div class="widget">
-    <video id="video" autoplay muted loop>
-        <source id="source" type="video/webm">
-    </video>
-</div>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"65f9075973884fc192143938ea377297","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
-
 </html>
